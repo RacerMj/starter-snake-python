@@ -60,7 +60,7 @@ class Battlesnake(object):
         goodMove = False
 
         triedMoves = []
-        while goodMove == False:
+        while goodMove == False and len(triedMoves) < 4:
             possible_moves = ["right", "up", "down", "left"]
             
             if len(triedMoves) < 4: 
