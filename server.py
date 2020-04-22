@@ -162,7 +162,8 @@ class Battlesnake(object):
                 # The other snake is longer 
                 if nextToFood:
                     for b in body:
-                        if abs(b["x"]-targetFood["x"]) < 2 and abs(b["y"]-targetFood["y"]) < 2 and len(body) > len(myBody):
+                        if (abs(b["x"]-targetFood["x"]) < 2 and abs(b["y"]-targetFood["y"]) < 2 and 
+                            len(body) > len(myBody) and currentMove == 0):
                             goodMove = False
                         break
 
