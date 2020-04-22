@@ -2,6 +2,7 @@ import os
 import random
 
 import cherrypy
+import json
 
 """
 This is a simple Battlesnake server written in Python.
@@ -38,11 +39,44 @@ class Battlesnake(object):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
+        
+        # Get the game data as a json string
         data = cherrypy.request.json
-
-        # Choose a random direction to move in
-        possible_moves = ["up", "down", "left", "right"]
-        move = random.choice(possible_moves)
+        # Parse the json string 
+        parsedJson = json.loads(data)
+        
+        # Get my data from the parsed data
+        me = parsedJson["you"]
+        myBody = me["body"]
+        for segment in myBody:
+            targetX = segment["x"]
+            targetY = segment["y"]
+            break
+        
+        goodMove = False
+        tests = 0
+        while goodMove == False and tests < 100:
+            # Choose a random direction to move in
+            possible_moves = ["up", "down", "left", "right"]
+            move = random.choice(possible_moves)
+            if move == "up":
+                targetY = targetY - 1
+            elif move == "down":
+                targetY == targetY + 1
+            elif move == "left":
+                targetX == targetX - 1
+            else:
+                targetX == targetX + 1
+            goodMove = True
+            
+            # Get the snakes data from the parsed data
+            snakes = parsedJson["snakes"]
+            for s in snakes:
+                body = s["body"]
+                for b in body:
+                    if b["x"] == targetX and b["y"] == targetY:
+                        goodMove = False
+            tests = tests + 1
 
         print(f"MOVE: {move}")
         return {"move": move}
