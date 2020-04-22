@@ -70,8 +70,6 @@ class Battlesnake(object):
                     try:
                         # see if we've tried it already
                         moveIndex = triedMoves.index(move)
-                        # if we have tried it, we'll get a result, so loop
-                        loop
                     except ValueError:
                         # we got an error, indicating it wasn't in our triedMoves list
                         goodMove = True
@@ -99,7 +97,8 @@ class Battlesnake(object):
                 
                 # If the move is bad, go back to start to try another
                 if goodMove == False:
-                    loop
+                    # Skip the rest of the while loop and start at the top again
+                    continue
 
                 # Get the snakes data from the parsed data
                 snakes = board["snakes"]
@@ -114,7 +113,7 @@ class Battlesnake(object):
                         break
             else:
                 # no moves left, return whatever we have and die
-                return {"move":move}
+                break
                         
             tests = tests + 1
 
