@@ -91,7 +91,7 @@ class Battlesnake(object):
             tests = tests + 1
 
         print(f"MOVE: {move}")
-        return {"move": move}
+        return {"move": "right"}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
