@@ -77,16 +77,14 @@ class Battlesnake(object):
         targetX = 0
         targetY = 0
         # calculate the distance to each piece of food
+        targetFood = {}
         for f in foodstuffs:
-            fx = f["x"]
-            fy = f["y"]
-            distance = abs(headX-fx)+abs(headY-fy)
+            distance = abs(headX-f["x"])+abs(headY-f["y"])
             
             # if this piece is closer, make it the new target
             if distance < distanceToFood:
                 distanceToFood = distance
-                targetX = fx
-                targetY = fy
+                targetFood = f
 
         # moves to try in order
         moveXList = []
@@ -94,19 +92,19 @@ class Battlesnake(object):
         moveList = ["", "", "", ""]
                                 
         # what direction should we try first
-        if headX > targetX:
+        if headX > targetFood["x"]:
             moveXList = ["left", "right"]
         else:
             moveXList = ["right", "left"]
 
         # y is largest difference
-        if headY > targetY:
+        if headY > targetFood["y"]:
             moveYList = ["up", "down"]
         else:
             moveYList = ["down", "up"]
         
         # try to move in direction of largest difference
-        if abs(headX-targetX) > abs(headY-targetY):
+        if abs(headX-targetFood["x"]) > abs(headY-targetFood["y"]):
             # X is largest difference
             moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
@@ -148,11 +146,28 @@ class Battlesnake(object):
                 # Skip the rest of the while loop and start at the top again
                 continue
     
+            # Determine if I am next to food, by being 1 or less away in both X and Y
+            nextToFood = False
+            if abs(headX-targetFood["x"]) < 2 and abs(headY-targetFood["y"]) < 2:
+                nextToFood = True
+
             # Get the snakes data from the parsed data
             snakes = board["snakes"]
             for s in snakes:
                 body = s["body"]
+
+                # check for these conditions:
+                # I am next to the food
+                # Another snake head is next to the food
+                # The other snake is longer 
+                if nextToFood:
+                    for b in body:
+                        if abs(b["x"]-targetFood["x"]) < 2 and abs(b["y"]-targetFood["y"]) < 2 and len(body) > len(myBody):
+                            goodMove = False
+                        break
+
                 for b in body:
+                    # check for an impact with any body segment
                     if b["x"] == targetX and b["y"] == targetY:
                         goodMove = False
                         break
