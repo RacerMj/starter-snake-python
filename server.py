@@ -3,6 +3,7 @@ import random
 
 import cherrypy
 import json
+from asyncio.__main__ import loop
 
 """
 This is a simple Battlesnake server written in Python.
@@ -19,7 +20,7 @@ class Battlesnake(object):
     @cherrypy.expose
     def ping(self):
         # The Battlesnake engine calls this function to make sure your snake is working.
-        return "pongo"
+        return "Version 0.1"
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -42,16 +43,14 @@ class Battlesnake(object):
         
         # Get the game data as a json string
         data = cherrypy.request.json
-        # Parse the json string 
-#        parsedJson = json.loads(data)
-        parsedJson = data
         
-        board = parsedJson["board"]
+        board = data["board"]
         height = board["height"]
         width = board["width"]
         
         # Get my data from the parsed data
-        me = parsedJson["you"]
+        # Set the target square to my head for now
+        me = data["you"]
         myBody = me["body"]
         for segment in myBody:
             targetX = segment["x"]
@@ -59,36 +58,64 @@ class Battlesnake(object):
             break
         
         goodMove = False
-        tests = 0
-        while goodMove == False and tests < 100:
-            # Choose a random direction to move in
+
+        triedMoves = []
+        while goodMove == False:
             possible_moves = ["right", "up", "down", "left"]
-            move = random.choice(possible_moves)
             
-            if move == "up":
-                targetY = targetY - 1
+            if len(triedMoves) < 4: 
+                # Choose a direction to move in
+                while goodMove == False:
+                    move = random.choice(possible_moves)
+                    try:
+                        # see if we've tried it already
+                        moveIndex = triedMoves.index(move)
+                        # if we have tried it, we'll get a result, so loop
+                        loop
+                    except ValueError:
+                        # we got an error, indicating it wasn't in our triedMoves list
+                        goodMove = True
+
+                # Now adjust the target by the direction we're moving in             
+                if move == "up":
+                    targetY = targetY - 1
+                    
+                elif move == "down":
+                    targetY = targetY + 1
+                    
+                elif move == "left":
+                    targetX = targetX - 1
+                    
+                else:
+                    targetX = targetX + 1
+                    
+                # If the target is out of bounds, this is not a good move
+                if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
+                    goodMove = False
+                    # Add the out of bounds move to the tried moves list
+                    triedMoves.append(move)
+                else:
+                    goodMove = True
                 
-            elif move == "down":
-                targetY = targetY + 1
-                
-            elif move == "left":
-                targetX = targetX - 1
-                
+                # If the move is bad, go back to start to try another
+                if goodMove == False:
+                    loop
+
+                # Get the snakes data from the parsed data
+                snakes = board["snakes"]
+                for s in snakes:
+                    body = s["body"]
+                    for b in body:
+                        if b["x"] == targetX and b["y"] == targetY:
+                            goodMove = False
+                            triedMoves.append(move)
+                            break
+                    if goodMove == False:
+                        break
             else:
-                targetX = targetX + 1
-                
-            if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
-                goodMove = False
-            else:
-                goodMove = True
-            
-            # Get the snakes data from the parsed data
-            snakes = board["snakes"]
-            for s in snakes:
-                body = s["body"]
-                for b in body:
-                    if b["x"] == targetX and b["y"] == targetY:
-                        goodMove = False
+                # no moves left, return whatever we have and die
+                return {"move":move}
+                        
             tests = tests + 1
 
         print(f"move: {move}")
