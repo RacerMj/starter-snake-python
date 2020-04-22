@@ -19,7 +19,7 @@ class Battlesnake(object):
     @cherrypy.expose
     def ping(self):
         # The Battlesnake engine calls this function to make sure your snake is working.
-        return "pong"
+        return "pongo"
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -91,7 +91,7 @@ class Battlesnake(object):
             tests = tests + 1
 
         print(f"MOVE: {move}")
-        return {"move": "right"}
+        return {"move": move}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
