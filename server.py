@@ -76,15 +76,19 @@ class Battlesnake(object):
 
                 # Now adjust the target by the direction we're moving in             
                 if move == "up":
+                    targetX = headX
                     targetY = headY - 1
                     
                 elif move == "down":
+                    targetX = headX
                     targetY = headY + 1
                     
                 elif move == "left":
+                    targetY = headY
                     targetX = headX - 1
                     
                 else:
+                    targetY = headY
                     targetX = headX + 1
                     
                 # If the target is out of bounds, this is not a good move
