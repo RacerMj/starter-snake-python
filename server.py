@@ -65,12 +65,15 @@ class Battlesnake(object):
             move = random.choice(possible_moves)
             if move == "up":
                 targetY = targetY - 1
+                
             elif move == "down":
-                targetY == targetY + 1
+                targetY = targetY + 1
+                
             elif move == "left":
-                targetX == targetX - 1
+                targetX = targetX - 1
+                
             else:
-                targetX == targetX + 1
+                targetX = targetX + 1
                 
             if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
                 goodMove = False
