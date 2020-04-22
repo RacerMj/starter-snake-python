@@ -60,8 +60,8 @@ class Battlesnake(object):
         goodMove = False
 
         triedMoves = []
+        possible_moves = ["right", "up", "down", "left"]
         while goodMove == False and len(triedMoves) < 4:
-            possible_moves = ["right", "up", "down", "left"]
             
             if len(triedMoves) < 4: 
                 # Choose a direction to move in
@@ -109,14 +109,13 @@ class Battlesnake(object):
                             goodMove = False
                             triedMoves.append(move)
                             break
+                        
                     if goodMove == False:
                         break
             else:
                 # no moves left, return whatever we have and die
                 break
                         
-            tests = tests + 1
-
         print(f"move: {move}")
         return {"move":move}
 
