@@ -45,6 +45,10 @@ class Battlesnake(object):
         # Parse the json string 
         parsedJson = json.loads(data)
         
+        board = parsedJson["board"]
+        height = board["height"]
+        width = board["width"]
+        
         # Get my data from the parsed data
         me = parsedJson["you"]
         myBody = me["body"]
@@ -67,10 +71,14 @@ class Battlesnake(object):
                 targetX == targetX - 1
             else:
                 targetX == targetX + 1
-            goodMove = True
+                
+            if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
+                goodMove = False
+            else:
+                goodMove = True
             
             # Get the snakes data from the parsed data
-            snakes = parsedJson["snakes"]
+            snakes = board["snakes"]
             for s in snakes:
                 body = s["body"]
                 for b in body:
