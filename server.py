@@ -3,7 +3,7 @@ import random
 
 import cherrypy
 import json
-from asyncio.__main__ import loop
+
 
 """
 This is a simple Battlesnake server written in Python.
@@ -119,6 +119,7 @@ class Battlesnake(object):
 
         print(f"move: {move}")
         return {"move":move}
+
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
