@@ -53,8 +53,8 @@ class Battlesnake(object):
         me = data["you"]
         myBody = me["body"]
         for segment in myBody:
-            targetX = segment["x"]
-            targetY = segment["y"]
+            headX = segment["x"]
+            headY = segment["y"]
             break
         
         goodMove = False
@@ -76,16 +76,16 @@ class Battlesnake(object):
 
                 # Now adjust the target by the direction we're moving in             
                 if move == "up":
-                    targetY = targetY - 1
+                    targetY = headY - 1
                     
                 elif move == "down":
-                    targetY = targetY + 1
+                    targetY = headY + 1
                     
                 elif move == "left":
-                    targetX = targetX - 1
+                    targetX = headX - 1
                     
                 else:
-                    targetX = targetX + 1
+                    targetX = headX + 1
                     
                 # If the target is out of bounds, this is not a good move
                 if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
