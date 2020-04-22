@@ -30,7 +30,7 @@ class Battlesnake(object):
         # TODO: Use this function to decide how your snake is going to look on the board.
         data = cherrypy.request.json
         print("START")
-        return {"color": "#99ff00", "headType": "regular", "tailType": "regular"}
+        return {"color": "#ff9900", "headType": "regular", "tailType": "regular"}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -91,7 +91,7 @@ class Battlesnake(object):
             tests = tests + 1
 
         print(f"MOVE: {move}")
-        return {"move": move}
+        return "{\"move\": \"" + move + "\"}"
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -104,6 +104,7 @@ class Battlesnake(object):
 
 
 if __name__ == "__main__":
+    random.seed()
     server = Battlesnake()
     cherrypy.config.update({"server.socket_host": "0.0.0.0"})
     cherrypy.config.update(
