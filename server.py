@@ -119,16 +119,12 @@ class Battlesnake(object):
                     continue
 
                 # Get my own data from the parsed data
-                snakes = board["you"]
-                for s in snakes:
-                    body = s["body"]
-                    for b in body:
-                        if b["x"] == targetX and b["y"] == targetY:
-                            goodMove = False
-                            triedMoves.append(move)
-                            break
-                        
-                    if goodMove == False:
+                snakes = data["you"]
+                body = s["body"]
+                for b in body:
+                    if b["x"] == targetX and b["y"] == targetY:
+                        goodMove = False
+                        triedMoves.append(move)
                         break
             else:
                 # no moves left, return whatever we have and die
