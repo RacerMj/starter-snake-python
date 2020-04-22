@@ -43,7 +43,8 @@ class Battlesnake(object):
         # Get the game data as a json string
         data = cherrypy.request.json
         # Parse the json string 
-        parsedJson = json.loads(data)
+#        parsedJson = json.loads(data)
+        parsedJson = data
         
         board = parsedJson["board"]
         height = board["height"]
@@ -90,8 +91,8 @@ class Battlesnake(object):
                         goodMove = False
             tests = tests + 1
 
-        print(f"MOVE: {move}")
-        return "{\"move\": \"" + move + "\"}"
+        print(f"move: {move}")
+        return {"move":move}
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
