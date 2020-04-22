@@ -63,6 +63,7 @@ class Battlesnake(object):
             # Choose a random direction to move in
             possible_moves = ["right", "up", "down", "left"]
             move = random.choice(possible_moves)
+            
             if move == "up":
                 targetY = targetY - 1
                 
