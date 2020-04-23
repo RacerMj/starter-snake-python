@@ -171,27 +171,33 @@ class Battlesnake(object):
             # Get the snakes data from the parsed data
             snakes = data["board"]["snakes"]
             for s in snakes:
+                body = s["body"]
+
+                # We want to avoid contesting with another snakehead
                 if s["id"] != myId:
-                    body = s["body"]
-        
                     # Check for these conditions:
                     # Another snake head is next to the target square
-                    # I have moves left
+                    # I have moves left to try. I will only contest if it's my last choice
                     if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2 and currentMove < 3):
                         goodMove = False
+        
+                # If we suspect a head collision, don't bother with other tests
+                if goodMove == False:
+                    # exit the loop
                     break
         
-                    if goodMove == False:
+                # See if we're going to hit a snake segment, including me
+                for segment in body:
+                    # check for an impact with any body segment
+                    if segment["x"] == targetX and segment["y"] == targetY:
+                        goodMove = False
+                        # exit the loop
                         break
-        
-                    for segment in body:
-                        # check for an impact with any body segment
-                        if segment["x"] == targetX and segment["y"] == targetY:
-                            goodMove = False
-                            break
-                        
-                    if goodMove == False:
-                        break
+                    
+                # If we have a body impact, don't bother with other tests
+                if goodMove == False:
+                    # exit the loop
+                    break
     
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
@@ -201,17 +207,17 @@ class Battlesnake(object):
                 continue
     
             # Get my own data from the parsed data
-            snakes = data["you"]
-            body = s["body"]
-            for b in body:
-                if b["x"] == targetX and b["y"] == targetY:
-                    goodMove = False
-                    break
+            #snakes = data["you"]
+            #body = s["body"]
+            #for b in body:
+            #    if b["x"] == targetX and b["y"] == targetY:
+            #        goodMove = False
+            #        break
                         
             # If the move hits myself, this is not a good move
-            if goodMove == False:
-                # increment the move to try
-                currentMove = currentMove + 1
+            #if goodMove == False:
+            #    # increment the move to try
+            #    currentMove = currentMove + 1
     
         print(f"move: {move}")
         return {"move":move}
