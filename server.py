@@ -43,10 +43,30 @@ class Battlesnake(object):
         # Get the game data as a json string
         data = cherrypy.request.json
         
-        board = data["board"]
-        height = board["height"]
-        width = board["width"]
+        height = data["board"]["height"]
+        width = data["board"]["width"]
         
+        x = 0 
+        y = 0
+        board = []
+        for x in range(width):
+            col = []
+            for y in range(height):
+                col.append(0)
+            board.append(col)
+        snakes = data["board"]["snakes"]
+        currentSnake = 1
+        for s in snakes:
+            body = s["body"]
+            snakehead = True
+            for segment in body:
+                if snakehead:
+                    board[segment["x"]][segment["y"]] = "99"
+                else:
+                    board[segment["x"]][segment["y"]] = currentSnake
+                snakehead = False
+            currentSnake = currentSnake + 1
+                 
         # Get my data from the parsed data
         # Set the target square to my head for now
         me = data["you"]
@@ -72,7 +92,7 @@ class Battlesnake(object):
     
         # find closest food
         # get foodstuffs
-        foodstuffs = board["food"]
+        foodstuffs = data["board"]["food"]
         # set distance to farthest possible on board
         distanceToFood = width * 2
         targetFoodX = 0
@@ -120,11 +140,6 @@ class Battlesnake(object):
             move = moveList[currentMove]
             goodMove = True
             
-            if len(board["snakes"]) == 3:
-                move = "up"
-            elif len(board["snakes"]) == 4:
-                move = "down"
-                
             # Now adjust the target by the direction we're moving in             
             if move == "up":
                 targetX = headX
@@ -159,7 +174,7 @@ class Battlesnake(object):
             #    nextToFood = True
     
             # Get the snakes data from the parsed data
-            snakes = board["snakes"]
+            snakes = data["board"]["snakes"]
             for s in snakes:
                 if s["id"] != myId:
                     body = s["body"]
