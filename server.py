@@ -50,6 +50,7 @@ class Battlesnake(object):
         # Get my data from the parsed data
         # Set the target square to my head for now
         me = data["you"]
+        myId = me["id"]
         myBody = me["body"]
         for segment in myBody:
             headX = segment["x"]
@@ -155,30 +156,31 @@ class Battlesnake(object):
             # Get the snakes data from the parsed data
             snakes = board["snakes"]
             for s in snakes:
-                body = s["body"]
-    
-                # Check for these conditions:
-                # I am next to the food
-                # Another snake head is next to the target square
-                # The other snake is longer 
-                # I have moves left
-                #if nextToFood:
-                for b in body:
-                    if (abs(b["x"]-targetX) < 2 and abs(b["y"]-targetY) < 2 and currentMove < 3):
-                        goodMove = False
-                    break
-    
-                if goodMove == False:
-                    break
-    
-                for b in body:
-                    # check for an impact with any body segment
-                    if b["x"] == targetX and b["y"] == targetY:
-                        goodMove = False
+                if s["id"] <> myId:
+                    body = s["body"]
+        
+                    # Check for these conditions:
+                    # I am next to the food
+                    # Another snake head is next to the target square
+                    # The other snake is longer 
+                    # I have moves left
+                    #if nextToFood:
+                    for b in body:
+                        if (abs(b["x"]-targetX) < 2 and abs(b["y"]-targetY) < 2 and currentMove < 3):
+                            goodMove = False
                         break
-                    
-                if goodMove == False:
-                    break
+        
+                    if goodMove == False:
+                        break
+        
+                    for b in body:
+                        # check for an impact with any body segment
+                        if b["x"] == targetX and b["y"] == targetY:
+                            goodMove = False
+                            break
+                        
+                    if goodMove == False:
+                        break
     
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
