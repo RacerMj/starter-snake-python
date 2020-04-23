@@ -71,8 +71,8 @@ class Battlesnake(object):
         # Set the target square to my head for now
         me = data["you"]
         myId = me["id"]
-        myBody = me["body"]
-        for segment in myBody:
+        # Get my head coordinates
+        for segment in me["body"]:
             headX = segment["x"]
             headY = segment["y"]
             break
@@ -168,11 +168,6 @@ class Battlesnake(object):
                 # Skip the rest of the while loop and start at the top again
                 continue
     
-            # Determine if I am next to food, by being 1 or less away in both X and Y
-            #nextToFood = False
-            #if abs(headX-targetFoodX) < 2 and abs(headY-targetFoodY) < 2:
-            #    nextToFood = True
-    
             # Get the snakes data from the parsed data
             snakes = data["board"]["snakes"]
             for s in snakes:
@@ -180,22 +175,18 @@ class Battlesnake(object):
                     body = s["body"]
         
                     # Check for these conditions:
-                    # I am next to the food
                     # Another snake head is next to the target square
-                    # The other snake is longer 
                     # I have moves left
-                    #if nextToFood:
-                    for b in body:
-                        if (abs(b["x"]-targetX) < 2 and abs(b["y"]-targetY) < 2 and currentMove < 3):
-                            goodMove = False
-                        break
+                    if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2 and currentMove < 3):
+                        goodMove = False
+                    break
         
                     if goodMove == False:
                         break
         
-                    for b in body:
+                    for segment in body:
                         # check for an impact with any body segment
-                        if b["x"] == targetX and b["y"] == targetY:
+                        if segment["x"] == targetX and segment["y"] == targetY:
                             goodMove = False
                             break
                         
