@@ -57,7 +57,7 @@ class Battlesnake(object):
             break
         
         goodMove = False
-
+    
         # Choose a direction to move in
         # random
         #while goodMove == False:
@@ -68,14 +68,14 @@ class Battlesnake(object):
         #    except ValueError:
         #        # we got an error, indicating it wasn't in our triedMoves list
         #        goodMove = True
-
+    
         # find closest food
         # get foodstuffs
         foodstuffs = board["food"]
         # set distance to farthest possible on board
-        distanceToFood = width
-        targetX = 0
-        targetY = 0
+        distanceToFood = width * 2
+        targetFoodX = 0
+        targetFoodY = 0
         # calculate the distance to each piece of food
         targetFood = {}
         for f in foodstuffs:
@@ -84,27 +84,28 @@ class Battlesnake(object):
             # if this piece is closer, make it the new target
             if distance < distanceToFood:
                 distanceToFood = distance
-                targetFood = f
-
+                targetFoodX = f["x"]
+                targetFoodY = f["y"]
+    
         # moves to try in order
         moveXList = []
         moveYList = []
         moveList = ["", "", "", ""]
                                 
         # what direction should we try first
-        if headX > targetFood["x"]:
+        if headX > targetFoodX:
             moveXList = ["left", "right"]
         else:
             moveXList = ["right", "left"]
-
+    
         # y is largest difference
-        if headY > targetFood["y"]:
+        if headY > targetFoodY:
             moveYList = ["up", "down"]
         else:
             moveYList = ["down", "up"]
         
         # try to move in direction of largest difference
-        if abs(headX-targetFood["x"]) > abs(headY-targetFood["y"]):
+        if abs(headX-targetFoodX) > abs(headY-targetFoodY):
             # X is largest difference
             moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
@@ -148,25 +149,26 @@ class Battlesnake(object):
     
             # Determine if I am next to food, by being 1 or less away in both X and Y
             nextToFood = False
-            if abs(headX-targetFood["x"]) < 2 and abs(headY-targetFood["y"]) < 2:
+            if abs(headX-targetFoodX) < 2 and abs(headY-targetFoodY) < 2:
                 nextToFood = True
-
+    
             # Get the snakes data from the parsed data
             snakes = board["snakes"]
             for s in snakes:
                 body = s["body"]
-
-                # check for these conditions:
+    
+                # Check for these conditions:
                 # I am next to the food
                 # Another snake head is next to the food
                 # The other snake is longer 
+                # I am moving to the food
                 if nextToFood:
                     for b in body:
-                        if (abs(b["x"]-targetFood["x"]) < 2 and abs(b["y"]-targetFood["y"]) < 2 and 
-                            len(body) > len(myBody) and currentMove == 0):
+                        if (abs(b["x"]-targetFoodX) < 2 and abs(b["y"]-targetFoodY) < 2 and 
+                                len(body) > len(myBody) and currentMove == 0):
                             goodMove = False
                         break
-
+    
                 for b in body:
                     # check for an impact with any body segment
                     if b["x"] == targetX and b["y"] == targetY:
@@ -195,7 +197,7 @@ class Battlesnake(object):
             if goodMove == False:
                 # increment the move to try
                 currentMove = currentMove + 1
-
+    
         print(f"move: {move}")
         return {"move":move}
 
