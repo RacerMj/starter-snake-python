@@ -46,26 +46,26 @@ class Battlesnake(object):
         height = data["board"]["height"]
         width = data["board"]["width"]
         
-        x = 0 
-        y = 0
-        board = []
-        for x in range(width):
-            col = []
-            for y in range(height):
-                col.append(0)
-            board.append(col)
-        snakes = data["board"]["snakes"]
-        currentSnake = 1
-        for s in snakes:
-            body = s["body"]
-            snakehead = True
-            for segment in body:
-                if snakehead:
-                    board[segment["x"]][segment["y"]] = "99"
-                else:
-                    board[segment["x"]][segment["y"]] = currentSnake
-                snakehead = False
-            currentSnake = currentSnake + 1
+        #x = 0 
+        #y = 0
+        #board = []
+        #for x in range(width):
+        #    col = []
+        #    for y in range(height):
+        #        col.append(0)
+        #    board.append(col)
+        #snakes = data["board"]["snakes"]
+        #currentSnake = 1
+        #for s in snakes:
+        #    body = s["body"]
+        #    snakehead = True
+        #    for segment in body:
+        #        if snakehead:
+        #            board[segment["x"]][segment["y"]] = "99"
+        #        else:
+        #            board[segment["x"]][segment["y"]] = currentSnake
+        #        snakehead = False
+        #    currentSnake = currentSnake + 1
                  
         # Get my data from the parsed data
         # Set the target square to my head for now
@@ -80,15 +80,6 @@ class Battlesnake(object):
         goodMove = False
     
         # Choose a direction to move in
-        # random
-        #while goodMove == False:
-        #    move = random.choice(possible_moves)
-        #    try:
-        #        # see if we've tried it already
-        #        moveIndex = triedMoves.index(move)
-        #    except ValueError:
-        #        # we got an error, indicating it wasn't in our triedMoves list
-        #        goodMove = True
     
         # find closest food
         # get foodstuffs
@@ -112,6 +103,7 @@ class Battlesnake(object):
         moveXList = []
         moveYList = []
         moveList = ["", "", "", ""]
+        moveListResults = ["","","",""]
                                 
         # what direction should we try first
         if headX > targetFoodX:
@@ -139,6 +131,7 @@ class Battlesnake(object):
         while goodMove == False and currentMove < 4:                
             move = moveList[currentMove]
             goodMove = True
+            moveListResults[currentMove] = "yes"
             
             # Now adjust the target by the direction we're moving in             
             if move == "up":
@@ -180,6 +173,7 @@ class Battlesnake(object):
                     # I have moves left to try. I will only contest if it's my last choice
                     if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2 and currentMove < 3):
                         goodMove = False
+                        moveListResults[currentMove] = "maybe"
         
                 # If we suspect a head collision, don't bother with other tests
                 if goodMove == False:
@@ -191,6 +185,7 @@ class Battlesnake(object):
                     # check for an impact with any body segment
                     if segment["x"] == targetX and segment["y"] == targetY:
                         goodMove = False
+                        moveListResults[currentMove] = "no"
                         # exit the loop
                         break
                     
@@ -203,22 +198,15 @@ class Battlesnake(object):
             if goodMove == False:
                 # increment the move to try
                 currentMove = currentMove + 1
-                # Skip the rest of the while loop and start at the top again
-                continue
     
-            # Get my own data from the parsed data
-            #snakes = data["you"]
-            #body = s["body"]
-            #for b in body:
-            #    if b["x"] == targetX and b["y"] == targetY:
-            #        goodMove = False
-            #        break
-                        
-            # If the move hits myself, this is not a good move
-            #if goodMove == False:
-            #    # increment the move to try
-            #    currentMove = currentMove + 1
-    
+        # If we don't have a good move, try a maybe
+        if not goodMove:
+            i = 0
+            for i in range(len(moveListResults)):
+                if moveListResults[i] == "maybe":
+                    move = moveList[i]
+                    break
+
         print(f"move: {move}")
         return {"move":move}
 
