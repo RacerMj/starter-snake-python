@@ -148,9 +148,9 @@ class Battlesnake(object):
                 continue
     
             # Determine if I am next to food, by being 1 or less away in both X and Y
-            nextToFood = False
-            if abs(headX-targetFoodX) < 2 and abs(headY-targetFoodY) < 2:
-                nextToFood = True
+            #nextToFood = False
+            #if abs(headX-targetFoodX) < 2 and abs(headY-targetFoodY) < 2:
+            #    nextToFood = True
     
             # Get the snakes data from the parsed data
             snakes = board["snakes"]
@@ -159,15 +159,17 @@ class Battlesnake(object):
     
                 # Check for these conditions:
                 # I am next to the food
-                # Another snake head is next to the food
+                # Another snake head is next to the target square
                 # The other snake is longer 
-                # I am moving to the food
-                if nextToFood:
-                    for b in body:
-                        if (abs(b["x"]-targetFoodX) < 2 and abs(b["y"]-targetFoodY) < 2 and 
-                                len(body)+1 > len(myBody) and currentMove == 0):
-                            goodMove = False
-                        break
+                # I have moves left
+                #if nextToFood:
+                for b in body:
+                    if (abs(b["x"]-targetX) < 2 and abs(b["y"]-targetY) < 2 and currentMove < 3):
+                        goodMove = False
+                    break
+    
+                if goodMove == False:
+                    break
     
                 for b in body:
                     # check for an impact with any body segment
