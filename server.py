@@ -120,6 +120,11 @@ class Battlesnake(object):
             move = moveList[currentMove]
             goodMove = True
             
+            if len(board["snakes"]) == 3:
+                move = "up"
+            elif len(board["snakes"]) == 4:
+                move = "down"
+                
             # Now adjust the target by the direction we're moving in             
             if move == "up":
                 targetX = headX
