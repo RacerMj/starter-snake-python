@@ -156,7 +156,7 @@ class Battlesnake(object):
             # Get the snakes data from the parsed data
             snakes = board["snakes"]
             for s in snakes:
-                if s["id"] <> myId:
+                if s["id"] != myId:
                     body = s["body"]
         
                     # Check for these conditions:
