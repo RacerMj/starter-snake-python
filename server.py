@@ -165,7 +165,7 @@ class Battlesnake(object):
                 if nextToFood:
                     for b in body:
                         if (abs(b["x"]-targetFoodX) < 2 and abs(b["y"]-targetFoodY) < 2 and 
-                                len(body) > len(myBody) and currentMove == 0):
+                                len(body) > len(myBody)+1 and currentMove == 0):
                             goodMove = False
                         break
     
