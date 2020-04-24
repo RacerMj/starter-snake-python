@@ -183,6 +183,7 @@ class Battlesnake(object):
             move = moveList[currentMove]
             goodMove = True
             moveListResults[currentMove] = "yes"
+            print("Trying move " + move)
             
             # Now adjust the target by the direction we're moving in             
             if move == "up":
@@ -204,6 +205,7 @@ class Battlesnake(object):
             # If the target is out of bounds, this is not a good move
             if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
                 goodMove = False
+                print("Target square is out of bounds")
                     
             # If the move is bad, go back to start to try another
             if goodMove == False:
@@ -216,7 +218,7 @@ class Battlesnake(object):
             snakes = data["board"]["snakes"]
             for s in snakes:
                 body = s["body"]
-
+    
                 # We want to avoid contesting with another snakehead
                 if s["id"] != myId:
                     # Check for these conditions:
@@ -226,6 +228,7 @@ class Battlesnake(object):
                         if (len(body)+1 > myLength and currentMove < 3):
                             goodMove = False
                             moveListResults[currentMove] = "maybe"
+                            print("Might hit a snakehead")
         
                 # If we suspect a head collision, don't need to bother with other tests
                 if goodMove == False:
@@ -240,8 +243,11 @@ class Battlesnake(object):
                         if i < len(body)-1:
                             goodMove = False
                             moveListResults[currentMove] = "no"
+                            print("Going to hit a snake segment")
                             # exit the loop
                             break
+                        else:
+                            print("Going to hit a tail")
                     
                 # If we have a body impact, don't bother with other tests
                 if goodMove == False:
@@ -272,7 +278,8 @@ class Battlesnake(object):
                 if blocked:
                     goodMove = False
                     moveListResults[currentMove] = "maybe"
-
+                    print("Target square is blocked")
+    
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
                 # increment the move to try
@@ -285,9 +292,9 @@ class Battlesnake(object):
                 if moveListResults[i] == "maybe":
                     move = moveList[i]
                     break
-
+    
         print(f"move: {move}")
-        return {"move":move}
+        return {"move":move}    
 
 
     @cherrypy.expose
