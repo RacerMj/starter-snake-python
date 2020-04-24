@@ -96,7 +96,7 @@ class Battlesnake(object):
         tooSmall = False
         snakes = data["board"]["snakes"]
         for s in range(len(snakes)):
-            if myLength < len(snakes[s]["body"]+1):
+            if myLength < len(snakes[s]["body"])+1:
                 tooSmall = True
                 break
                 
