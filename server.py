@@ -46,6 +46,7 @@ class Battlesnake(object):
         height = data["board"]["height"]
         width = data["board"]["width"]
         
+        # turn the board into an array for easier checking of blocked areas
         board = []
         for x in range(width):
             col = []
@@ -69,6 +70,8 @@ class Battlesnake(object):
         # Set the target square to my head for now
         me = data["you"]
         myId = me["id"]
+        myLength = len(me["body"])
+        myHealth = me["health"]
         # Get my head coordinates
         for segment in me["body"]:
             headX = segment["x"]
@@ -79,24 +82,29 @@ class Battlesnake(object):
     
         # Choose a direction to move in
     
-        # find closest food
-        # get foodstuffs
-        foodstuffs = data["board"]["food"]
-        # set distance to farthest possible on board
-        distanceToFood = width * 2
-        targetFoodX = 0
-        targetFoodY = 0
-        # calculate the distance to each piece of food
-        targetFood = {}
-        for f in foodstuffs:
-            distance = abs(headX-f["x"])+abs(headY-f["y"])
+        # if we're hungry, find closest food
+        if myHealth < 10:
+            # get foodstuffs
+            foodstuffs = data["board"]["food"]
+            # set distance to farthest possible on board
+            distanceToFood = width * 2
+            farTargetX = 0
+            farTargetY = 0
+            # calculate the distance to each piece of food
+            targetFood = {}
+            for f in foodstuffs:
+                distance = abs(headX-f["x"])+abs(headY-f["y"])
+                
+                # if this piece is closer, make it the new target
+                if distance < distanceToFood:
+                    distanceToFood = distance
+                    farTargetX = f["x"]
+                    farTargetY = f["y"]
+        else:
+            # move to closest wall
+            farTargetX = width/2
+            farTargetY = height/2
             
-            # if this piece is closer, make it the new target
-            if distance < distanceToFood:
-                distanceToFood = distance
-                targetFoodX = f["x"]
-                targetFoodY = f["y"]
-    
         # moves to try in order
         moveXList = []
         moveYList = []
@@ -104,19 +112,19 @@ class Battlesnake(object):
         moveListResults = ["","","",""]
                                 
         # what direction should we try first
-        if headX > targetFoodX:
+        if headX > farTargetX:
             moveXList = ["left", "right"]
         else:
             moveXList = ["right", "left"]
     
         # y is largest difference
-        if headY > targetFoodY:
+        if headY > farTargetY:
             moveYList = ["up", "down"]
         else:
             moveYList = ["down", "up"]
         
         # try to move in direction of largest difference
-        if abs(headX-targetFoodX) > abs(headY-targetFoodY):
+        if abs(headX-farTargetX) > abs(headY-farTargetY):
             # X is largest difference
             moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
