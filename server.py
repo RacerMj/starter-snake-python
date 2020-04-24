@@ -254,13 +254,15 @@ class Battlesnake(object):
                 for i in range(len(body)):
                     # check for an impact with any body segment
                     if body[i]["x"] == targetX and body[i]["y"] == targetY:
-                        # if it's a tail, the move should be safe, anything 
+                        # if it's anything but the tail, the move is bad 
                         if i < len(body)-1:
                             goodMove = False
                             moveListResults[currentMove] = "no"
                             print("Going to hit a snake segment")
                             # exit the loop
                             break
+                        
+                        # it's the tail, so that's going to move out of the way
                         else:
                             print("Going to hit a tail")
                     
@@ -270,25 +272,26 @@ class Battlesnake(object):
                     break
     
             # don't enter a closed box
-            # we just want to see if the surrounding spaces are open or occupied
+            # we  want to see if the surrounding spaces are open or occupied
             if goodMove:
-                blocked = True
+                blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
+                
                 # check up
-                if targetY-1 >= 0:
-                    if board[targetX][targetY-1] == 0:
-                        blocked = False
+                #if targetY-1 >= 0:
+                #    if board[targetX][targetY-1] == 0:
+                #        blocked = False
                 # check down
-                if targetY+1 < height:
-                    if board[targetX][targetY+1] == 0:
-                        blocked = False
+                #if targetY+1 < height:
+                #    if board[targetX][targetY+1] == 0:
+                #        blocked = False
                 # check left
-                if targetX-1 >= 0:
-                    if board[targetX-1][targetY] == 0:
-                        blocked = False
+                #if targetX-1 >= 0:
+                #    if board[targetX-1][targetY] == 0:
+                #        blocked = False
                 # check right
-                if targetX+1 < width:
-                    if board[targetX+1][targetY] == 0:
-                        blocked = False
+                #if targetX+1 < width:
+                #    if board[targetX+1][targetY] == 0:
+                #        blocked = False
                     
                 if blocked:
                     goodMove = False
@@ -305,7 +308,7 @@ class Battlesnake(object):
             i = 0
             for i in range(len(moveListResults)):
                 if moveListResults[i] == "maybe":
-                    move = moveList[i]
+                    move = moveList[i] 
                     break
     
         print(f"move: {move}")
@@ -320,6 +323,50 @@ class Battlesnake(object):
         data = cherrypy.request.json
         print("END")
         return "ok"
+    
+
+    def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
+        # assume there are no exits to start
+        blockExits = 0
+    
+        # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
+        if depth > 5:
+            return False
+                
+        # Look for exits from the target square. If we find one, we'll follow it.
+        # check up
+        # not out of bounds
+        if targetY-1 >= 0:
+            # the square is empty, and not the square I'm coming from
+            if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # check down
+        if targetY+1 < len(board[0]):
+            if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # check left
+        if targetX-1 >= 0:
+            if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # check right
+        if targetX+1 < len(board[0]):
+            if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # no exits found
+        return True
+        
 
 
 if __name__ == "__main__":
