@@ -194,6 +194,31 @@ class Battlesnake(object):
                     # exit the loop
                     break
     
+            # don't enter a closed box
+            # we just want to see if the surrounding spaces are open or occupied
+            if goodMove:
+                blocked = True
+                # check up
+                if targetY-1 >= 0:
+                    if board[targetX][targetY-1] == 0:
+                        blocked = False
+                # check down
+                if targetY+1 < height:
+                    if board[targetX][targetY+1] == 0:
+                        blocked = False
+                # check left
+                if targetX-1 >= 0:
+                    if board[targetX-1][targetY] == 0:
+                        blocked = False
+                # check right
+                if targetX+1 < width:
+                    if board[targetX+1][targetY] == 0:
+                        blocked = False
+                    
+                if blocked:
+                    goodMove = False
+                    moveListResults[currentMove] = "no"
+
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
                 # increment the move to try
