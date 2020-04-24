@@ -89,7 +89,7 @@ class Battlesnake(object):
                                 
     
         # if we're hungry, find closest food
-        if myHealth < 10:
+        if myHealth < 10 or myLength < 10:
             # get foodstuffs
             foodstuffs = data["board"]["food"]
             # set distance to farthest possible on board
