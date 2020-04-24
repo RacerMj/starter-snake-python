@@ -53,19 +53,24 @@ class Battlesnake(object):
             for y in range(height):
                 col.append(0)
             board.append(col)
+
         snakes = data["board"]["snakes"]
-        currentSnake = 1
         for s in snakes:
             body = s["body"]
-            snakehead = True
-            for segment in body:
-                if snakehead:
+            i = 0
+            for i in range(len(body)):
+                if i == 0:
+                    # head
                     board[segment["x"]][segment["y"]] = "99"
+                    
+                elif i == len(body)-1 and len(body)>1:
+                    # tail
+                    board[segment["x"]][segment["y"]] = "88"
+                    
                 else:
+                    # body segment
                     board[segment["x"]][segment["y"]] = currentSnake
-                snakehead = False
-            currentSnake = currentSnake + 1
-                 
+                    
         # Get my data from the parsed data
         # Set the target square to my head for now
         me = data["you"]
@@ -223,19 +228,21 @@ class Battlesnake(object):
                             goodMove = False
                             moveListResults[currentMove] = "maybe"
         
-                # If we suspect a head collision, don't bother with other tests
+                # If we suspect a head collision, don't need to bother with other tests
                 if goodMove == False:
                     # exit the loop
                     break
         
                 # See if we're going to hit a snake segment, including me
-                for segment in body:
+                for i in range(len(body)):
                     # check for an impact with any body segment
-                    if segment["x"] == targetX and segment["y"] == targetY:
-                        goodMove = False
-                        moveListResults[currentMove] = "no"
-                        # exit the loop
-                        break
+                    if body[i]["x"] == targetX and body[i]["y"] == targetY:
+                        # if it's a tail, the move should be safe, anything 
+                        if i < len(body)-1:
+                            goodMove = False
+                            moveListResults[currentMove] = "no"
+                            # exit the loop
+                            break
                     
                 # If we have a body impact, don't bother with other tests
                 if goodMove == False:
