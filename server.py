@@ -262,6 +262,8 @@ class Battlesnake(object):
                             # exit the loop
                             break
                         else:
+                            goodMove = False
+                            moveListResults[currentMove] = "maybe"
                             print("Going to hit a tail")
                     
                 # If we have a body impact, don't bother with other tests
@@ -320,6 +322,67 @@ class Battlesnake(object):
         data = cherrypy.request.json
         print("END")
         return "ok"
+    
+
+    def checkForBlock(targetX, targetY, fromX, fromY, board, depth):
+        blockExits = 0
+    
+        # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
+        if depth > 5:
+            return depth
+                
+        # Check if the square is open and the exit isn't where we're coming from
+        # check up
+        if targetY-1 >= 0:
+            if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                pathLength = checkForBlock(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # check down
+        if targetY+1 < len(board[0]):
+            if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                pathLength = checkForBlock(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # if we have more than 1 exit, we're done
+        if blockExits > 1:
+            return -1
+        
+        # check left
+        if targetX-1 >= 0:
+            if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                pathLength = checkForBlock(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # if we have more than 1 exit, we're done
+        if blockExits > 1:
+            return -1
+        
+        # check right
+        if targetX+1 < len(board[0]):
+            if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
+                blockExits = blockExits + 1
+                # got an exit, so let's go that way
+                pathLength = checkForBlock(targetX, targetY-1, targetX, targetY, board, depth+1)
+    
+        # if we have more than 1 exit, we're done
+        if blockExits > 1:
+            return -1
+        
+        # I am blocking the incoming, so we are checking if there is exactly one other exit
+        if blockExits == 1:
+            return 1
+        
+        # no exits
+        if blockExits == 0:
+            return 0
+        
+        # more than one other exit
+        else:
+            return -1        
 
 
 if __name__ == "__main__":
