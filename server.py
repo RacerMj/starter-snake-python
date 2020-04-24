@@ -92,8 +92,15 @@ class Battlesnake(object):
         moveListResults = ["","","",""]
                                 
     
-        # if we're hungry, find closest food
-        if myHealth < 10 or myLength < 10:
+        # if we're hungry, or smaller than opponents, find closest food
+        tooSmall = False
+        snakes = data["board"]["snakes"]
+        for s in range(len(snakes)):
+            if myLength < len(snakes[i]["body"]+1):
+                tooSmall = True
+                break
+                
+        if myHealth < 10 or tooSmall < 10 :
             # get foodstuffs
             foodstuffs = data["board"]["food"]
             # set distance to farthest possible on board
