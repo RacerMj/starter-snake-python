@@ -218,9 +218,10 @@ class Battlesnake(object):
                     # Check for these conditions:
                     # Another snake head is next to the target square
                     # I have moves left to try. I will only contest if it's my last choice
-                    if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2 and currentMove < 3):
-                        goodMove = False
-                        moveListResults[currentMove] = "maybe"
+                    if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2):
+                        if (len(body)+1 > myLength and currentMove < 3):
+                            goodMove = False
+                            moveListResults[currentMove] = "maybe"
         
                 # If we suspect a head collision, don't bother with other tests
                 if goodMove == False:
