@@ -107,43 +107,71 @@ class Battlesnake(object):
                     farTargetX = f["x"]
                     farTargetY = f["y"]
 
-            # what direction should we try first
-            if headX > farTargetX:
-                moveXList = ["left", "right"]
-            else:
-                moveXList = ["right", "left"]
-        
-            # y is largest difference
-            if headY > farTargetY:
-                moveYList = ["up", "down"]
-            else:
-                moveYList = ["down", "up"]
-
         else:
-            # move to closest wall
-            farTargetX = width/2
-            farTargetY = height/2
+            # Move clockwise if we're on a wall
+            if headX == 0:
+                if headY == 0:
+                    farTargetX = width-1
+                    farTargetY = 0
+                else:
+                    farTargetX = 0
+                    farTargetY = 0
+
+            elif headX == width-1:
+                if headY == height-1:
+                    farTargetX = 0
+                    farTargetY = height-1
+                else:
+                    farTargetX = width-1
+                    farTargetY = height-1
+
+            elif headY == 0:
+                if headX == width-1:
+                    farTargetX = width-1
+                    farTargetY = height-1
+                else:
+                    farTargetX = width-1
+                    farTargetY = 0
+                   
+            elif headY == height-1:
+                if headX == 0:
+                    farTargetX = 0
+                    farTargetY = 0
+                else:
+                    farTargetX = 0
+                    farTargetY = height-1
+                   
+            else:
+                # we're not on one of the sides, so move to closest wall
+                if headX < width/2:
+                    farTargetX = 0
+                else:
+                    farTargetX = width-1
+                if headY < height/2:
+                    farTargetY = 0
+                else:    
+                    farTargetY = height-1
             
-            # what direction should we try first
-            if headX < farTargetX:
-                moveXList = ["left", "right"]
-            else:
-                moveXList = ["right", "left"]
-        
-            # y is largest difference
-            if headY < farTargetY:
-                moveYList = ["up", "down"]
-            else:
-                moveYList = ["down", "up"]
-        
-        # try to move in direction of largest difference
+        # what direction should we try first
+        if headX > farTargetX:
+            moveXList = ["left", "right"]
+        else:
+            moveXList = ["right", "left"]
+    
+        # y is largest difference
+        if headY > farTargetY:
+            moveYList = ["up", "down"]
+        else:
+            moveYList = ["down", "up"]
+    
+         # try to move in direction of largest difference
         if abs(headX-farTargetX) > abs(headY-farTargetY):
             # X is largest difference
             moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
             # y is largest difference
             moveList = [moveYList[0], moveXList[0], moveYList[1], moveXList[1]]
-        
+       
         # start with the first move
         currentMove = 0
         
