@@ -320,24 +320,25 @@ class Battlesnake(object):
             # don't enter a closed box
             # we  want to see if the surrounding spaces are open or occupied
             if goodMove:
-                blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
+                #blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
                 
+                blocked = True
                 # check up
-                #if targetY-1 >= 0:
-                #    if board[targetX][targetY-1] == 0:
-                #        blocked = False
+                if targetY-1 >= 0:
+                    if board[targetX][targetY-1] == 0:
+                        blocked = False
                 # check down
-                #if targetY+1 < height:
-                #    if board[targetX][targetY+1] == 0:
-                #        blocked = False
+                if targetY+1 < height:
+                    if board[targetX][targetY+1] == 0:
+                        blocked = False
                 # check left
-                #if targetX-1 >= 0:
-                #    if board[targetX-1][targetY] == 0:
-                #        blocked = False
+                if targetX-1 >= 0:
+                    if board[targetX-1][targetY] == 0:
+                        blocked = False
                 # check right
-                #if targetX+1 < width:
-                #    if board[targetX+1][targetY] == 0:
-                #        blocked = False
+                if targetX+1 < width:
+                    if board[targetX+1][targetY] == 0:
+                        blocked = False
                     
                 if blocked:
                     goodMove = False
