@@ -53,23 +53,22 @@ class Battlesnake(object):
             for y in range(height):
                 col.append(0)
             board.append(col)
-
+    
         snakes = data["board"]["snakes"]
-        for s in snakes:
-            body = s["body"]
-            i = 0
+        for s in range(len(snakes)):
+            body = snakes[s]["body"]
             for i in range(len(body)):
                 if i == 0:
                     # head
-                    board[segment["x"]][segment["y"]] = "99"
+                    board[body[i]["x"]][body[i]["y"]] = "99"
                     
                 elif i == len(body)-1 and len(body)>1:
                     # tail
-                    board[segment["x"]][segment["y"]] = "88"
+                    board[body[i]["x"]][body[i]["y"]] = "88"
                     
                 else:
                     # body segment
-                    board[segment["x"]][segment["y"]] = currentSnake
+                    board[body[i]["x"]][body[i]["y"]] = s+1
                     
         # Get my data from the parsed data
         # Set the target square to my head for now
