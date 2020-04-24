@@ -178,10 +178,18 @@ class Battlesnake(object):
          # try to move in direction of largest difference
         if abs(headX-farTargetX) > abs(headY-farTargetY):
             # X is largest difference
-            moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
+            # if y difference is zero, make y moves second priority
+            if (headY - farTargetY) == 0:
+                moveList = [moveXList[0], moveYList[0], moveYList[1], moveXList[1]]
+            else:
+                moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
             # y is largest difference
-            moveList = [moveYList[0], moveXList[0], moveYList[1], moveXList[1]]
+            # if x difference is zero, make x moves second priority
+            if (headX - farTargetX) == 0:
+                moveList = [moveYList[0], moveXList[0], moveXList[1], moveYList[1]]
+            else:
+                moveList = [moveYList[0], moveXList[0], moveYList[1], moveXList[1]]
        
         # start with the first move
         currentMove = 0
