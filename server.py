@@ -100,7 +100,7 @@ class Battlesnake(object):
                 tooSmall = True
                 break
                 
-        if myHealth < 10 or tooSmall < 10 :
+        if myHealth < 10 or tooSmall :
             # get foodstuffs
             foodstuffs = data["board"]["food"]
             # set distance to farthest possible on board
