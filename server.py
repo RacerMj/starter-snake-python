@@ -81,6 +81,12 @@ class Battlesnake(object):
         goodMove = False
     
         # Choose a direction to move in
+        # moves to try in order
+        moveXList = []
+        moveYList = []
+        moveList = ["", "", "", ""]
+        moveListResults = ["","","",""]
+                                
     
         # if we're hungry, find closest food
         if myHealth < 10:
@@ -100,28 +106,35 @@ class Battlesnake(object):
                     distanceToFood = distance
                     farTargetX = f["x"]
                     farTargetY = f["y"]
+
+            # what direction should we try first
+            if headX > farTargetX:
+                moveXList = ["left", "right"]
+            else:
+                moveXList = ["right", "left"]
+        
+            # y is largest difference
+            if headY > farTargetY:
+                moveYList = ["up", "down"]
+            else:
+                moveYList = ["down", "up"]
+
         else:
             # move to closest wall
             farTargetX = width/2
             farTargetY = height/2
             
-        # moves to try in order
-        moveXList = []
-        moveYList = []
-        moveList = ["", "", "", ""]
-        moveListResults = ["","","",""]
-                                
-        # what direction should we try first
-        if headX > farTargetX:
-            moveXList = ["left", "right"]
-        else:
-            moveXList = ["right", "left"]
-    
-        # y is largest difference
-        if headY > farTargetY:
-            moveYList = ["up", "down"]
-        else:
-            moveYList = ["down", "up"]
+            # what direction should we try first
+            if headX < farTargetX:
+                moveXList = ["left", "right"]
+            else:
+                moveXList = ["right", "left"]
+        
+            # y is largest difference
+            if headY < farTargetY:
+                moveYList = ["up", "down"]
+            else:
+                moveYList = ["down", "up"]
         
         # try to move in direction of largest difference
         if abs(headX-farTargetX) > abs(headY-farTargetY):
