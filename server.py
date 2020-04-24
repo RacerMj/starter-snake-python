@@ -271,7 +271,7 @@ class Battlesnake(object):
                     
                 if blocked:
                     goodMove = False
-                    moveListResults[currentMove] = "no"
+                    moveListResults[currentMove] = "maybe"
 
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
