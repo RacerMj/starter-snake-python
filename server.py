@@ -39,6 +39,8 @@ class Battlesnake(object):
         # assume there are no exits to start
         blockExits = 0
     
+        print("path check ", targetX, targetY)
+        
         # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
         if depth > 5:
             return False
@@ -58,21 +60,21 @@ class Battlesnake(object):
             if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
                 blockExits = blockExits + 1
                 # got an exit, so let's go that way
-                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+                return pathBlocked(targetX, targetY+1, targetX, targetY, board, depth+1)
     
         # check left
         if targetX-1 >= 0:
             if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
                 blockExits = blockExits + 1
                 # got an exit, so let's go that way
-                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+                return pathBlocked(targetX-1, targetY, targetX, targetY, board, depth+1)
     
         # check right
         if targetX+1 < len(board[0]):
             if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
                 blockExits = blockExits + 1
                 # got an exit, so let's go that way
-                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+                return pathBlocked(targetX+1, targetY, targetX, targetY, board, depth+1)
     
         # no exits found
         return True
@@ -318,25 +320,25 @@ class Battlesnake(object):
             # don't enter a closed box
             # we  want to see if the surrounding spaces are open or occupied
             if goodMove:
-                #blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
+                blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
                 
-                blocked = True
+                #blocked = True
                 # check up
-                if targetY-1 >= 0:
-                    if board[targetX][targetY-1] == 0:
-                        blocked = False
+                #if targetY-1 >= 0:
+                #    if board[targetX][targetY-1] == 0:
+                #        blocked = False
                 # check down
-                if targetY+1 < height:
-                    if board[targetX][targetY+1] == 0:
-                        blocked = False
+                #if targetY+1 < height:
+                #    if board[targetX][targetY+1] == 0:
+                #        blocked = False
                 # check left
-                if targetX-1 >= 0:
-                    if board[targetX-1][targetY] == 0:
-                        blocked = False
+                #if targetX-1 >= 0:
+                #    if board[targetX-1][targetY] == 0:
+                #        blocked = False
                 # check right
-                if targetX+1 < width:
-                    if board[targetX+1][targetY] == 0:
-                        blocked = False
+                #if targetX+1 < width:
+                #    if board[targetX+1][targetY] == 0:
+                #        blocked = False
                     
                 if blocked:
                     goodMove = False
