@@ -173,48 +173,48 @@ class Battlesnake(object):
 
         else:
             # Move clockwise if we're on a wall
-            if headX == 0:
-                if headY == 0:
-                    farTargetX = width-1
-                    farTargetY = 0
+            if headX == 1:
+                if headY == 1:
+                    farTargetX = width-2
+                    farTargetY = 1
                 else:
-                    farTargetX = 0
-                    farTargetY = 0
+                    farTargetX = 1
+                    farTargetY = 1
 
-            elif headX == width-1:
-                if headY == height-1:
-                    farTargetX = 0
-                    farTargetY = height-1
+            elif headX == width-2:
+                if headY == height-2:
+                    farTargetX = 1
+                    farTargetY = height-2
                 else:
-                    farTargetX = width-1
-                    farTargetY = height-1
+                    farTargetX = width-2
+                    farTargetY = height-2
 
-            elif headY == 0:
-                if headX == width-1:
-                    farTargetX = width-1
-                    farTargetY = height-1
+            elif headY == 1:
+                if headX == width-2:
+                    farTargetX = width-2
+                    farTargetY = height-2
                 else:
-                    farTargetX = width-1
-                    farTargetY = 0
+                    farTargetX = width-2
+                    farTargetY = 1
                    
-            elif headY == height-1:
-                if headX == 0:
-                    farTargetX = 0
-                    farTargetY = 0
+            elif headY == height-2:
+                if headX == 1:
+                    farTargetX = 1
+                    farTargetY = 1
                 else:
-                    farTargetX = 0
-                    farTargetY = height-1
+                    farTargetX = 1
+                    farTargetY = height-2
                    
             else:
                 # we're not on one of the sides, so move to closest wall
                 if headX < width/2:
-                    farTargetX = 0
+                    farTargetX = 1
                 else:
                     farTargetX = width-1
                 if headY < height/2:
-                    farTargetY = 0
+                    farTargetY = 1
                 else:    
-                    farTargetY = height-1
+                    farTargetY = height-2
             
         # what direction should we try first
         if headX > farTargetX:
@@ -324,24 +324,6 @@ class Battlesnake(object):
             if goodMove:
                 blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
                 
-                #blocked = True
-                # check up
-                #if targetY-1 >= 0:
-                #    if board[targetX][targetY-1] == 0:
-                #        blocked = False
-                # check down
-                #if targetY+1 < height:
-                #    if board[targetX][targetY+1] == 0:
-                #        blocked = False
-                # check left
-                #if targetX-1 >= 0:
-                #    if board[targetX-1][targetY] == 0:
-                #        blocked = False
-                # check right
-                #if targetX+1 < width:
-                #    if board[targetX+1][targetY] == 0:
-                #        blocked = False
-                    
                 if blocked:
                     goodMove = False
                     moveListResults[currentMove] = "maybe"
