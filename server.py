@@ -280,6 +280,25 @@ class Battlesnake(object):
             for s in snakes:
                 body = s["body"]
     
+                # See if we're going to hit a snake segment, including me
+                for i in range(len(body)):
+                    # check for an impact with any body segment
+                    if body[i]["x"] == targetX and body[i]["y"] == targetY:
+                        # if it's a tail, the move should be safe, anything 
+                        if i < len(body)-1:
+                            goodMove = False
+                            moveListResults[currentMove] = "no"
+                            print("Going to hit a snake segment")
+                            # exit the loop
+                            break
+                        else:
+                            print("Going to hit a tail")
+                    
+                # If we have a collision, don't need to bother with other tests
+                if goodMove == False:
+                    # exit the loop
+                    break
+        
                 # We want to avoid contesting with another snakehead
                 if s["id"] != myId:
                     # Check for these conditions:
@@ -291,28 +310,7 @@ class Battlesnake(object):
                             moveListResults[currentMove] = "maybe"
                             print("Might hit a snakehead")
         
-                # If we suspect a head collision, don't need to bother with other tests
-                if goodMove == False:
-                    # exit the loop
-                    break
-        
-                # See if we're going to hit a snake segment, including me
-                for i in range(len(body)):
-                    # check for an impact with any body segment
-                    if body[i]["x"] == targetX and body[i]["y"] == targetY:
-                        # if it's anything but the tail, the move is bad 
-                        if i < len(body)-1:
-                            goodMove = False
-                            moveListResults[currentMove] = "no"
-                            print("Going to hit a snake segment")
-                            # exit the loop
-                            break
-                        
-                        # it's the tail, so that's going to move out of the way
-                        else:
-                            print("Going to hit a tail")
-                    
-                # If we have a body impact, don't bother with other tests
+                # If we have an impact, don't bother with other tests
                 if goodMove == False:
                     # exit the loop
                     break
