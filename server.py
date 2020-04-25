@@ -9,6 +9,51 @@ This is a simple Battlesnake server written in Python.
 For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python/README.md
 """
 
+def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
+    # assume there are no exits to start
+    blockExits = 0
+
+    print("path check ", targetX, targetY)
+    
+    # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
+    if depth > 5:
+        return False
+            
+    # Look for exits from the target square. If we find one, we'll follow it.
+    # check up
+    # not out of bounds
+    if targetY-1 >= 0:
+        # the square is empty, and not the square I'm coming from
+        if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
+            blockExits = blockExits + 1
+            # got an exit, so let's go that way
+            return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+
+    # check down
+    if targetY+1 < len(board[0]):
+        if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
+            blockExits = blockExits + 1
+            # got an exit, so let's go that way
+            return pathBlocked(targetX, targetY+1, targetX, targetY, board, depth+1)
+
+    # check left
+    if targetX-1 >= 0:
+        if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
+            blockExits = blockExits + 1
+            # got an exit, so let's go that way
+            return pathBlocked(targetX-1, targetY, targetX, targetY, board, depth+1)
+
+    # check right
+    if targetX+1 < len(board[0]):
+        if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
+            blockExits = blockExits + 1
+            # got an exit, so let's go that way
+            return pathBlocked(targetX+1, targetY, targetX, targetY, board, depth+1)
+
+    # no exits found
+    return True
+
+
 
 class Battlesnake(object):
     @cherrypy.expose
@@ -35,51 +80,6 @@ class Battlesnake(object):
         return {"color": "#ff9900", "headType": "regular", "tailType": "regular"}
 
 
-    def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
-        # assume there are no exits to start
-        blockExits = 0
-    
-        print("path check ", targetX, targetY)
-        
-        # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
-        if depth > 5:
-            return False
-                
-        # Look for exits from the target square. If we find one, we'll follow it.
-        # check up
-        # not out of bounds
-        if targetY-1 >= 0:
-            # the square is empty, and not the square I'm coming from
-            if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
-                blockExits = blockExits + 1
-                # got an exit, so let's go that way
-                return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
-    
-        # check down
-        if targetY+1 < len(board[0]):
-            if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
-                blockExits = blockExits + 1
-                # got an exit, so let's go that way
-                return pathBlocked(targetX, targetY+1, targetX, targetY, board, depth+1)
-    
-        # check left
-        if targetX-1 >= 0:
-            if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
-                blockExits = blockExits + 1
-                # got an exit, so let's go that way
-                return pathBlocked(targetX-1, targetY, targetX, targetY, board, depth+1)
-    
-        # check right
-        if targetX+1 < len(board[0]):
-            if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
-                blockExits = blockExits + 1
-                # got an exit, so let's go that way
-                return pathBlocked(targetX+1, targetY, targetX, targetY, board, depth+1)
-    
-        # no exits found
-        return True
- 
- 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
