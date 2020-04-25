@@ -17,7 +17,7 @@ def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
     print("path check ", targetX, targetY)
     
     # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
-    if depth > 5:
+    if depth > 10:
         return False
             
     # Look for exits from the target square. If we find one, we'll follow it.
