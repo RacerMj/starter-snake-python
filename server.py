@@ -1,6 +1,6 @@
 import os
 import random
-
+import time
 import cherrypy
 
 
@@ -96,6 +96,8 @@ class Battlesnake(object):
         # Get the game data as a json string
         data = cherrypy.request.json
         
+        runTime = int(round(time.time() * 1000))
+
         height = data["board"]["height"]
         width = data["board"]["width"]
         
@@ -342,7 +344,9 @@ class Battlesnake(object):
                     move = moveList[i] 
                     break
     
-        print(f"move: {move}")
+        runTime = (int(round(time.time() * 1000))-runTime)
+        if runTime > 500:
+            stdout.write("#### HURRY UP! Runtime: " + str(runTime) + "\n")
         return {"move":move}    
 
 
