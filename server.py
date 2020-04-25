@@ -12,6 +12,7 @@ For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python
 def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
     # assume there are no exits to start
     blockExits = 0
+    coords = []
 
     print("path check ", targetX, targetY)
     
@@ -27,32 +28,36 @@ def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
         if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
             blockExits = blockExits + 1
             # got an exit, so let's go that way
-            return pathBlocked(targetX, targetY-1, targetX, targetY, board, depth+1)
+            coords = [targetX, targetY-1]
 
     # check down
     if targetY+1 < len(board[0]):
         if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
             blockExits = blockExits + 1
             # got an exit, so let's go that way
-            return pathBlocked(targetX, targetY+1, targetX, targetY, board, depth+1)
+            coords = [targetX, targetY+1]
 
     # check left
     if targetX-1 >= 0:
         if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
             blockExits = blockExits + 1
             # got an exit, so let's go that way
-            return pathBlocked(targetX-1, targetY, targetX, targetY, board, depth+1)
+            coords = [targetX-1, targetY]
 
     # check right
     if targetX+1 < len(board[0]):
         if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
             blockExits = blockExits + 1
             # got an exit, so let's go that way
-            return pathBlocked(targetX+1, targetY, targetX, targetY, board, depth+1)
+            coords = [targetX+1, targetY]
 
     # no exits found
-    return True
-
+    if blockExits > 1:
+        return False
+    elif blockExits == 1:
+        return pathBlocked(coords[0], coords[1], targetX, targetY, board, depth+1)
+    else:
+        return True
 
 
 class Battlesnake(object):
@@ -269,9 +274,6 @@ class Battlesnake(object):
             if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
                 goodMove = False
                 print("Target square is out of bounds")
-                    
-            # If the move is bad, go back to start to try another
-            if goodMove == False:
                 # increment the move to try
                 currentMove = currentMove + 1
                 # Skip the rest of the while loop and start at the top again
