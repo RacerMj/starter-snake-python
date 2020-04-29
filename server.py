@@ -117,7 +117,6 @@ class Battlesnake(object):
         moveList = ["", "", "", ""]
         moveListResults = ["","","",""]
                                 
-    
         # if we're hungry, or smaller than opponents, find closest food
         tooSmall = False
         snakes = data["board"]["snakes"]
@@ -292,20 +291,23 @@ class Battlesnake(object):
                     break
     
             # don't enter a closed box
-            # we  want to see if the surrounding spaces are open or occupied
+            # we just want to see if the surrounding spaces are open or occupied
             if goodMove:
                 #blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
                 blocked = False
                 coordsList = []
                 getVolume(targetX, targetY, headX, headY, board, coordsList, myLength)
                 print(coordsList)
-                if len(coordsList) < myLength:
+                if len(coordsList) < myLength/2:
                     blocked = True
-                
-                if blocked:
+                    goodMove = False
+                    moveListResults[currentMove] = "no"
+                    print("Target square is totally blocked")
+                elif len(coordsList) < myLength:
+                    blocked = True
                     goodMove = False
                     moveListResults[currentMove] = "maybe"
-                    print("Target square is blocked")
+                    print("Target square is mostly blocked")
 
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
