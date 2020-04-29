@@ -31,6 +31,26 @@ def getVolume(targetX, targetY, fromX, fromY, board, coordsList, maxVolume):
                     getVolume(ts[0], ts[1], targetX, targetY, board, coordsList, maxVolume)
             
     
+def possibleHeadCollision(targetX, targetY, fromX, fromY, board, snakeLengths):
+    # default result is no potential head collision
+    result = 0
+    
+    # Look for other snake heads around the target square
+    testSquares = [[targetX, targetY-1], [targetX+1, targetY], [targetX, targetY+1], [targetX-1, targetY]]
+
+    for ts in testSquares:
+        # Both coords need to be on the board
+        if ts[0] in range(len(board[0])) and ts[1] in range (len(board[0])):
+            # the square is a head, and not the square I'm coming from (me)
+            if (board[ts[0]][ts[1]] % 100 == 1) and not (fromX == ts[0] and fromY == ts[1]):
+                # get the snake's length for our return
+                temp = snakeLengths[int(board[ts[0]][ts[1]]/100)-1]
+                if temp > result:
+                    result = temp
+    
+    return result
+
+
 class Battlesnake(object):
     @cherrypy.expose
     def index(self):
@@ -59,16 +79,19 @@ class Battlesnake(object):
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def move(self):
+    def move():
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         
-        # Get the game data as a json string
-        data = cherrypy.request.json
-        
+        # Get the test game data as a json string
+        # start
+        data = {'game': {'id': 'game-id-string'}, 'turn': 4, 'board': {'height': 11, 'width': 11, 'food': [{'x': 3, 'y': 0}, {'x': 10, 'y': 8}], 'snakes': [{'id': 'snake1', 'name': 'alpha', 'health': 90, 'body': [{'x': 0, 'y': 7}, {'x': 1, 'y': 7}, {'x': 1, 'y': 8}, {'x': 1, 'y': 9}, {'x': 1, 'y': 10}, {'x': 0, 'y': 10}]}, {'id': 'snake2', 'name': 'beta', 'health': 90, 'body': [{'x': 0, 'y': 5}, {'x': 1, 'y': 5}, {'x': 1, 'y': 6}, {'x': 2, 'y': 6}]}, {'id': 'snake3', 'name': 'gamma', 'health': 90, 'body': [{'x': 4, 'y': 7}, {'x': 3, 'y': 7}, {'x': 3, 'y': 8}, {'x': 2, 'y': 8}, {'x': 2, 'y': 9}]}]}, 'you': {'id': 'snake1', 'name': 'alpha', 'health': 90, 'body': [{'x': 0, 'y': 7}, {'x': 1, 'y': 7}, {'x': 1, 'y': 8}, {'x': 1, 'y': 9}, {'x': 1, 'y': 10}, {'x': 0, 'y': 10}]}}
+    
+    
+        # get the time
         runTime = int(round(time.time() * 1000))
-
+           
         height = data["board"]["height"]
         width = data["board"]["width"]
         
@@ -80,10 +103,19 @@ class Battlesnake(object):
                 col.append(0)
             board.append(col)
     
+        # Copy all snake data into the board. First snake is 100, second 200, etc. Tail is x99
+        # Eg. First snake: 101, 102, 103, 199
+        # Second snake: 201, 202, 203, 299
+        # Unoccupied squares remain 0
+        snakeLength = []
         snakes = data["board"]["snakes"]
         for s in range(len(snakes)):
             body = snakes[s]["body"]
-            for i in range(len(body)):
+            # save the length of each snake so we don't have to look it up again later
+            snakeLength.append(len(body))
+            
+            # write the body bits into the board array
+            for i in range(snakeLength[s]):
                 if i == 0:
                     # head
                     board[body[i]["x"]][body[i]["y"]] = (s+1)*100+(i+1)
@@ -95,9 +127,8 @@ class Battlesnake(object):
                 else:
                     # body segment
                     board[body[i]["x"]][body[i]["y"]] = (s+1)*100+(i+1)
-                    
+                   
         # Get my data from the parsed data
-        # Set the target square to my head for now
         me = data["you"]
         myId = me["id"]
         myLength = len(me["body"])
@@ -116,7 +147,7 @@ class Battlesnake(object):
         moveYList = []
         moveList = ["", "", "", ""]
         moveListResults = ["","","",""]
-                                
+    
         # if we're hungry, or smaller than opponents, find closest food
         tooSmall = False
         snakes = data["board"]["snakes"]
@@ -142,51 +173,51 @@ class Battlesnake(object):
                     distanceToFood = distance
                     farTargetX = f["x"]
                     farTargetY = f["y"]
-
+    
         else:
             # Move clockwise if we're on a wall
-            if headX == 1:
-                if headY == 1:
-                    farTargetX = width-2
-                    farTargetY = 1
+            if headX == 0:
+                if headY == 0:
+                    farTargetX = width-1
+                    farTargetY = 0
                 else:
-                    farTargetX = 1
-                    farTargetY = 1
-
-            elif headX == width-2:
-                if headY == height-2:
-                    farTargetX = 1
-                    farTargetY = height-2
+                    farTargetX = 0
+                    farTargetY = 0
+    
+            elif headX == width-1:
+                if headY == height-1:
+                    farTargetX = 0
+                    farTargetY = height-1
                 else:
-                    farTargetX = width-2
-                    farTargetY = height-2
-
-            elif headY == 1:
-                if headX == width-2:
-                    farTargetX = width-2
-                    farTargetY = height-2
+                    farTargetX = width-1
+                    farTargetY = height-1
+    
+            elif headY == 0:
+                if headX == width-1:
+                    farTargetX = width-1
+                    farTargetY = height-1
                 else:
-                    farTargetX = width-2
-                    farTargetY = 1
+                    farTargetX = width-1
+                    farTargetY = 0
                    
-            elif headY == height-2:
-                if headX == 1:
-                    farTargetX = 1
-                    farTargetY = 1
+            elif headY == height-1:
+                if headX == 0:
+                    farTargetX = 0
+                    farTargetY = 0
                 else:
-                    farTargetX = 1
-                    farTargetY = height-2
+                    farTargetX = 0
+                    farTargetY = height-1
                    
             else:
                 # we're not on one of the sides, so move to closest wall
                 if headX < width/2:
-                    farTargetX = 1
+                    farTargetX = 0
                 else:
                     farTargetX = width-1
                 if headY < height/2:
-                    farTargetY = 1
+                    farTargetY = 0
                 else:    
-                    farTargetY = height-2
+                    farTargetY = height-1
             
         # what direction should we try first
         if headX > farTargetX:
@@ -194,7 +225,7 @@ class Battlesnake(object):
         else:
             moveXList = ["right", "left"]
     
-        # y is largest difference
+        # y 
         if headY > farTargetY:
             moveYList = ["up", "down"]
         else:
@@ -203,26 +234,31 @@ class Battlesnake(object):
          # try to move in direction of largest difference
         if abs(headX-farTargetX) > abs(headY-farTargetY):
             # X is largest difference
-            # if y difference is zero, make y moves second priority
-            if (headY - farTargetY) == 0:
-                moveList = [moveXList[0], moveYList[0], moveYList[1], moveXList[1]]
-            else:
-                moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
+            moveList = [moveXList[0], moveYList[0], moveXList[1], moveYList[1]]
         else:
             # y is largest difference
-            # if x difference is zero, make x moves second priority
-            if (headX - farTargetX) == 0:
-                moveList = [moveYList[0], moveXList[0], moveXList[1], moveYList[1]]
-            else:
-                moveList = [moveYList[0], moveXList[0], moveYList[1], moveXList[1]]
+            moveList = [moveYList[0], moveXList[0], moveYList[1], moveXList[1]]
        
         # start with the first move
         currentMove = 0
+        print(moveList)
         
-        while goodMove == False and currentMove < 4:                
+        # Possible moves from best to worst
+        # 0 - Open square
+        # 1 - Possible head collision if I am longer than other snake
+        # 1 - Tail collision if I am shorter
+        # 2 - Possible head collision if I am shorter
+        # 2 - Tail collision if I am longer
+        # 3 - Mostly blocked (no exit but more than half my volume)
+        # 4 - Totally blocked (no exit and less than/equal to half my volume
+        # 5 - Body collision
+        # 6 - Wall collision
+        
+        #while goodMove == False and currentMove < 4:
+        for currentMove in range(len(moveList)):                
             move = moveList[currentMove]
             goodMove = True
-            moveListResults[currentMove] = "yes"
+            moveListResults[currentMove] = 0
             print("Trying move " + move)
             
             # Now adjust the target by the direction we're moving in             
@@ -241,91 +277,67 @@ class Battlesnake(object):
             else:
                 targetY = headY
                 targetX = headX + 1
+    
+            coordsList = []
+            getVolume(targetX, targetY, headX, headY, board, coordsList, myLength)
+            blocked = len(coordsList)
+            
+            headBanger = possibleHeadCollision(targetX, targetY, headX, headY, board, snakeLength)
                         
-            # If the target is out of bounds, this is not a good move
-            if targetX < 0 or targetY < 0 or targetX >= width or targetY >= height:
+            # Check for wall collision < 0 or greater than width
+            if targetX not in range(width) or targetY not in range(width):
+                print("Going to hit a wall")
                 goodMove = False
-                print("Target square is out of bounds")
-                # increment the move to try
-                currentMove = currentMove + 1
+                moveListResults[currentMove] = 999
                 # Skip the rest of the while loop and start at the top again
                 continue
     
-            # See if we're going to hit a snake segment, including me
-            if board[targetX][targetY] % 100 == 99: 
-                print("Going to hit a snake tail")
-                goodMove = False
-                moveListResults[currentMove] = "maybe"
-                currentMove = currentMove + 1
-                # Skip the rest of the while loop and start at the top again
-                continue
+            # Check for body collision               
             elif board[targetX][targetY] % 100 > 0:
                 print("Going to hit a snake segment")
                 goodMove = False
-                moveListResults[currentMove] = "no"
-                currentMove = currentMove + 1
+                moveListResults[currentMove] = 899
                 # Skip the rest of the while loop and start at the top again
                 continue
-                
-           # Get the snakes data from the parsed data
-            snakes = data["board"]["snakes"]
-            for s in snakes:
-                body = s["body"]
     
-                # We want to avoid contesting with another snakehead
-                if s["id"] != myId:
-                    # Check for these conditions:
-                    # Another snake head is next to the target square
-                    # I have moves left to try. I will only contest if it's my last choice
-                    if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2):
-                        #if (len(body)+1 > myLength and currentMove < 3):
-                        # slightly more aggressive version of line above, takes the square as long as we're bigger
-                        if (len(body)+1 > myLength):
-                            goodMove = False
-                            moveListResults[currentMove] = "maybe"
-                            print("Might hit a snakehead")
-        
-                # If we have an impact, don't bother with other tests
-                if goodMove == False:
-                    # exit the loop
-                    break
+            # Check for mostly blocked where available path is < my body length              
+            elif len(coordsList) < myLength:
+                print("Target square is blocked")
+                goodMove = False
+                moveListResults[currentMove] = 100-len(coordsList)
+                # Skip the rest of the while loop and start at the top again
+                continue
     
-            # don't enter a closed box
-            # we just want to see if the surrounding spaces are open or occupied
-            if goodMove:
-                #blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
-                blocked = False
-                coordsList = []
-                getVolume(targetX, targetY, headX, headY, board, coordsList, myLength)
-                print(coordsList)
-                if len(coordsList) < myLength/2:
-                    blocked = True
-                    goodMove = False
-                    moveListResults[currentMove] = "no"
-                    print("Target square is totally blocked")
-                elif len(coordsList) < myLength:
-                    blocked = True
-                    goodMove = False
-                    moveListResults[currentMove] = "maybe"
-                    print("Target square is mostly blocked")
-
-            # If the move hits another snake segment, this is not a good move
-            if goodMove == False:
-                # increment the move to try
-                currentMove = currentMove + 1
+            elif headBanger > 0 and headBanger >= myLength:
+                print("Possible head collision")
+                goodMove = False
+                moveListResults[currentMove] = 2
+                # Skip the rest of the while loop and start at the top again
+                continue
+                            
+            # See if we're going to hit a snake segment, including me
+            elif board[targetX][targetY] % 100 == 99: 
+                print("Going to hit a snake tail")
+                goodMove = False
+                moveListResults[currentMove] = 1
+                # Skip the rest of the while loop and start at the top again
+                continue
+            
+        # Take the highest ranked move
+        bestMove = 1001
+        print(moveListResults)
+        for r in range(len(moveListResults)):
+            if moveListResults[r] < bestMove:
+                bestMove = moveListResults[r]
+                move = moveList[r]
     
-        # If we don't have a good move, try a maybe
-        if not goodMove:
-            i = 0
-            for i in range(len(moveListResults)):
-                if moveListResults[i] == "maybe":
-                    move = moveList[i] 
-                    break
+        print("Best move is ", move)
     
         runTime = (int(round(time.time() * 1000))-runTime)
         if runTime > 500:
-            stdout.write("#### HURRY UP! Runtime: " + str(runTime) + "\n")
-        return {"move":move}    
+            stdout.write("run time too long: " + str(runTime) + "\n")
+            
+        return {"move":move}     
 
 
     @cherrypy.expose
