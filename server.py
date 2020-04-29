@@ -60,6 +60,28 @@ def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
         return True
 
 
+# count the volume (number of squares available from the target square)
+# this routine will keep counting until we have counted every square available
+def getVolume(targetX, targetY, fromX, fromY, board, coordsList, maxVolume):
+    # Look for exits from the target square. If we find one, we'll follow it.
+    testSquares = [[targetX, targetY-1], [targetX+1, targetY], [targetX, targetY+1], [targetX-1, targetY]]
+    
+    for ts in testSquares:
+        # don't bother checking further if we're already at the max volume we need
+        if(len(coordsList) > maxVolume):
+            return 
+
+        # out of bounds?
+        if not (ts[0] < 0 or ts[0] > len(board[0])-1  or ts[1] < 0 or ts[1] > len(board[0])-1):
+            # the square is empty, and not the square I'm coming from
+            if board[ts[0]][ts[1]] == 0 and not (fromX == ts[0] and fromY == ts[1]):
+                # got an exit, so let's go that way
+                if ts not in coordsList:
+                    coordsList.append(ts)
+                    # then recurse
+                    getVolume(ts[0], ts[1], targetX, targetY, board, coordsList, maxVolume)
+            
+    
 class Battlesnake(object):
     @cherrypy.expose
     def index(self):
@@ -115,15 +137,15 @@ class Battlesnake(object):
             for i in range(len(body)):
                 if i == 0:
                     # head
-                    board[body[i]["x"]][body[i]["y"]] = "99"
+                    board[body[i]["x"]][body[i]["y"]] = (s+1)*100+(i+1)
                     
                 elif i == len(body)-1 and len(body)>1:
                     # tail
-                    board[body[i]["x"]][body[i]["y"]] = "88"
+                    board[body[i]["x"]][body[i]["y"]] = (s+1)*100+99
                     
                 else:
                     # body segment
-                    board[body[i]["x"]][body[i]["y"]] = s+1
+                    board[body[i]["x"]][body[i]["y"]] = (s+1)*100+(i+1)
                     
         # Get my data from the parsed data
         # Set the target square to my head for now
@@ -281,37 +303,32 @@ class Battlesnake(object):
                 # Skip the rest of the while loop and start at the top again
                 continue
     
-            # Get the snakes data from the parsed data
+             # See if we're going to hit a snake segment, including me
+            if board[targetX][targetY] % 100 == 99: 
+                print("Going to hit a snake tail")
+                # maybe this should be a maybe
+            elif board[targetX][targetY] % 100 > 0:
+                goodMove = False
+                moveListResults[currentMove] = "no"
+                print("Going to hit a snake segment")
+                currentMove = currentMove + 1
+                # Skip the rest of the while loop and start at the top again
+                continue
+                
+           # Get the snakes data from the parsed data
             snakes = data["board"]["snakes"]
             for s in snakes:
                 body = s["body"]
     
-                # See if we're going to hit a snake segment, including me
-                for i in range(len(body)):
-                    # check for an impact with any body segment
-                    if body[i]["x"] == targetX and body[i]["y"] == targetY:
-                        # if it's a tail, the move should be safe, anything 
-                        if i < len(body)-1:
-                            goodMove = False
-                            moveListResults[currentMove] = "no"
-                            print("Going to hit a snake segment")
-                            # exit the loop
-                            break
-                        else:
-                            print("Going to hit a tail")
-                    
-                # If we have a collision, don't need to bother with other tests
-                if goodMove == False:
-                    # exit the loop
-                    break
-        
                 # We want to avoid contesting with another snakehead
                 if s["id"] != myId:
                     # Check for these conditions:
                     # Another snake head is next to the target square
                     # I have moves left to try. I will only contest if it's my last choice
                     if (abs(body[0]["x"]-targetX) < 2 and abs(body[0]["y"]-targetY) < 2):
-                        if (len(body)+1 > myLength and currentMove < 3):
+                        #if (len(body)+1 > myLength and currentMove < 3):
+                        # slightly more aggressive version of line above, takes the square as long as we're bigger
+                        if (len(body)+1 > myLength):
                             goodMove = False
                             moveListResults[currentMove] = "maybe"
                             print("Might hit a snakehead")
@@ -324,13 +341,19 @@ class Battlesnake(object):
             # don't enter a closed box
             # we  want to see if the surrounding spaces are open or occupied
             if goodMove:
-                blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
+                #blocked = pathBlocked(targetX, targetY, headX, headY, board, 1)
+                blocked = False
+                coordsList = []
+                getVolume(targetX, targetY, headX, headY, board, coordsList, myLength)
+                print(coordsList)
+                if len(coordsList) < myLength:
+                    blocked = True
                 
                 if blocked:
                     goodMove = False
                     moveListResults[currentMove] = "maybe"
                     print("Target square is blocked")
-    
+
             # If the move hits another snake segment, this is not a good move
             if goodMove == False:
                 # increment the move to try
