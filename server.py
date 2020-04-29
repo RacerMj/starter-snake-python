@@ -79,16 +79,14 @@ class Battlesnake(object):
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def move():
+    def move(self):
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
         
-        # Get the test game data as a json string
-        # start
-        data = {'game': {'id': 'game-id-string'}, 'turn': 4, 'board': {'height': 11, 'width': 11, 'food': [{'x': 3, 'y': 0}, {'x': 10, 'y': 8}], 'snakes': [{'id': 'snake1', 'name': 'alpha', 'health': 90, 'body': [{'x': 0, 'y': 7}, {'x': 1, 'y': 7}, {'x': 1, 'y': 8}, {'x': 1, 'y': 9}, {'x': 1, 'y': 10}, {'x': 0, 'y': 10}]}, {'id': 'snake2', 'name': 'beta', 'health': 90, 'body': [{'x': 0, 'y': 5}, {'x': 1, 'y': 5}, {'x': 1, 'y': 6}, {'x': 2, 'y': 6}]}, {'id': 'snake3', 'name': 'gamma', 'health': 90, 'body': [{'x': 4, 'y': 7}, {'x': 3, 'y': 7}, {'x': 3, 'y': 8}, {'x': 2, 'y': 8}, {'x': 2, 'y': 9}]}]}, 'you': {'id': 'snake1', 'name': 'alpha', 'health': 90, 'body': [{'x': 0, 'y': 7}, {'x': 1, 'y': 7}, {'x': 1, 'y': 8}, {'x': 1, 'y': 9}, {'x': 1, 'y': 10}, {'x': 0, 'y': 10}]}}
-    
-    
+        # Get the game data as a json string
+        data = cherrypy.request.json
+        
         # get the time
         runTime = int(round(time.time() * 1000))
            
@@ -337,7 +335,7 @@ class Battlesnake(object):
         if runTime > 500:
             stdout.write("run time too long: " + str(runTime) + "\n")
             
-        return {"move":move}     
+        return {"move":move}    
 
 
     @cherrypy.expose
