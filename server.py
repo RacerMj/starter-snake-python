@@ -9,57 +9,6 @@ This is a simple Battlesnake server written in Python.
 For instructions see https://github.com/BattlesnakeOfficial/starter-snake-python/README.md
 """
 
-def pathBlocked(targetX, targetY, fromX, fromY, board, depth):
-    # assume there are no exits to start
-    blockExits = 0
-    coords = []
-
-    print("path check ", targetX, targetY)
-    
-    # This is a recursion limit check. Don't want to go too deep. Adjust as necessary
-    if depth > 10:
-        return False
-            
-    # Look for exits from the target square. If we find one, we'll follow it.
-    # check up
-    # not out of bounds
-    if targetY-1 >= 0:
-        # the square is empty, and not the square I'm coming from
-        if board[targetX][targetY-1] == 0 and not (fromX == targetX and fromY == targetY-1):
-            blockExits = blockExits + 1
-            # got an exit, so let's go that way
-            coords = [targetX, targetY-1]
-
-    # check down
-    if targetY+1 < len(board[0]):
-        if board[targetX][targetY+1] == 0 and not (fromX == targetX and fromY == targetY+1):
-            blockExits = blockExits + 1
-            # got an exit, so let's go that way
-            coords = [targetX, targetY+1]
-
-    # check left
-    if targetX-1 >= 0:
-        if board[targetX-1][targetY] == 0 and not (fromX == targetX-1 and fromY == targetY):
-            blockExits = blockExits + 1
-            # got an exit, so let's go that way
-            coords = [targetX-1, targetY]
-
-    # check right
-    if targetX+1 < len(board[0]):
-        if board[targetX+1][targetY] == 0 and not (fromX == targetX+1 and fromY == targetY):
-            blockExits = blockExits + 1
-            # got an exit, so let's go that way
-            coords = [targetX+1, targetY]
-
-    # no exits found
-    if blockExits > 1:
-        return False
-    elif blockExits == 1:
-        return pathBlocked(coords[0], coords[1], targetX, targetY, board, depth+1)
-    else:
-        return True
-
-
 # count the volume (number of squares available from the target square)
 # this routine will keep counting until we have counted every square available
 def getVolume(targetX, targetY, fromX, fromY, board, coordsList, maxVolume):
@@ -74,7 +23,7 @@ def getVolume(targetX, targetY, fromX, fromY, board, coordsList, maxVolume):
         # out of bounds?
         if not (ts[0] < 0 or ts[0] > len(board[0])-1  or ts[1] < 0 or ts[1] > len(board[0])-1):
             # the square is empty, and not the square I'm coming from
-            if board[ts[0]][ts[1]] == 0 and not (fromX == ts[0] and fromY == ts[1]):
+            if (board[ts[0]][ts[1]] == 0 or board[ts[0]][ts[1]] %100 == 99) and not (fromX == ts[0] and fromY == ts[1]):
                 # got an exit, so let's go that way
                 if ts not in coordsList:
                     coordsList.append(ts)
@@ -303,14 +252,18 @@ class Battlesnake(object):
                 # Skip the rest of the while loop and start at the top again
                 continue
     
-             # See if we're going to hit a snake segment, including me
+            # See if we're going to hit a snake segment, including me
             if board[targetX][targetY] % 100 == 99: 
                 print("Going to hit a snake tail")
-                # maybe this should be a maybe
+                goodMove = False
+                moveListResults[currentMove] = "maybe"
+                currentMove = currentMove + 1
+                # Skip the rest of the while loop and start at the top again
+                continue
             elif board[targetX][targetY] % 100 > 0:
+                print("Going to hit a snake segment")
                 goodMove = False
                 moveListResults[currentMove] = "no"
-                print("Going to hit a snake segment")
                 currentMove = currentMove + 1
                 # Skip the rest of the while loop and start at the top again
                 continue
