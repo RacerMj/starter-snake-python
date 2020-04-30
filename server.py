@@ -291,7 +291,7 @@ class Battlesnake(object):
                 continue
     
             # Check for body collision               
-            elif board[targetX][targetY] % 100 > 0:
+            elif board[targetX][targetY] % 100 != 99 and board[targetX][targetY] % 100 > 0:
                 print("Going to hit a snake segment")
                 goodMove = False
                 moveListResults[currentMove] = 899
