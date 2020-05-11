@@ -172,8 +172,36 @@ class Battlesnake(object):
                     farTargetX = f["x"]
                     farTargetY = f["y"]
     
+        # left pinch
+        elif headX == 1:
+            # my body is in line and there is an opponent's head next to my second body segment
+            if me["body"][2]["x"] == headX and board[0] [me["body"][2]["y"]] % 100 == 1:
+                print("potential pinch on left")
+                targetX = 0
+                targetY = headY 
+        # right pinch
+        elif headX == width-2:
+            # my body is in line and there is an opponent's head next to my second body segment
+            if me["body"][2]["x"] == headX and board[width-1] [me["body"][2]["y"]] % 100 == 1:
+                print("potential pinch on right")
+                targetX = width-1
+                targetY = headY 
+        # top pinch
+        elif headY == 1:
+            # my body is in line and there is an opponent's head next to my second body segment
+            if me["body"][2]["y"] == headY and  board[0] [me["body"][2]["x"]] % 100 == 1:
+                print("potential pinch on top")
+                targetX = headX
+                targetY = 0 
+        elif headY == height-2:
+            # my body is in line and there is an opponent's head next to my second body segment
+            if me["body"][2]["y"] == headY and  board[0] [me["body"][2]["x"]] % 100 == 1:
+                print("potential pinch on bottom")
+                targetX = headX
+                targetY = height-1
+    
         else:
-            # Move clockwise if we're on a wall
+            # Move clockwise if we're on our rail
             if headX == 0:
                 if headY == 0:
                     farTargetX = width-1
@@ -329,7 +357,7 @@ class Battlesnake(object):
                 bestMove = moveListResults[r]
                 move = moveList[r]
     
-        print("Best move is ", move)
+        print("Best move is ", move, " with a score of ", bestMove)
     
         runTime = (int(round(time.time() * 1000))-runTime)
         if runTime > 500:
